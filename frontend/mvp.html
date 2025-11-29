@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Smart Home Security</title>
+  <style>
+    :root {
+      /* Light Theme Palette */
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --accent: #0284c7;
+      --danger: #ef4444;
+      --glass: rgba(0, 0, 0, 0.05);
+      --radius: 16px;
+      --p: 14px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue';
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 20px 24px;
+      background: var(--card);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    header h1 {
+      font-size: 18px;
+      margin: 0;
+      color: var(--text);
+    }
+
+    .wrap {
+      display: flex;
+      justify-content: center;
+      padding: 40px 18px;
+      min-height: calc(100vh - 80px);
+    }
+
+    .card {
+      background: var(--card);
+      padding: 24px;
+      border-radius: var(--radius);
+      box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
+    /* Mockup */
+    .mockup {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .device {
+      width: 340px;
+      height: 680px;
+      border-radius: 40px;
+      background: #fff;
+      padding: 20px;
+      border: 8px solid #1e293b;
+      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.2);
+      align-self: center;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Notch simulation */
+    .device::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 24px;
+      background: #1e293b;
+      border-bottom-left-radius: 16px;
+      border-bottom-right-radius: 16px;
+      z-index: 10;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 600;
+      margin-top: 12px;
+      margin-bottom: 16px;
+    }
+
+    .visitor-photo {
+      width: 100%;
+      height: 280px;
+      border-radius: 20px;
+      background: #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 13px;
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .visitor-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .threat {
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    button {
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.1s, opacity 0.2s;
+    }
+    
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .btn-open {
+      background: var(--accent);
+      color: #fff;
+      flex: 1;
+      box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+    }
+
+    .btn-deny {
+      background: #fff;
+      border: 1px solid #cbd5e1;
+      color: var(--text);
+      flex: 1;
+    }
+
+    .comm {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .btn-speak {
+      background: #f1f5f9;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      color: var(--text);
+      font-size: 12px;
+      flex: 1;
+    }
+    
+    .btn-speak:hover {
+      background: #e2e8f0;
+    }
+
+    /* Emergency demo */
+    .badge-em {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: #fee2e2;
+      color: #ef4444;
+      font-weight: 700;
+      font-size: 11px;
+      border: 1px solid #fecaca;
+    }
+
+    .controls {
+        display:flex;
+        gap:8px;
+        justify-content:center;
+        align-items:center;
+        margin-top:6px;
+        background: #fff;
+        padding: 10px;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <img
+      src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='36' height='36'><rect rx='10' width='36' height='36' fill='%230ea5e9'/><path d='M18 8L8 16h2v10h6v-6h4v6h6V16h2L18 8z' fill='white'/></svg>"
+      alt="logo" style="width:36px;height:36px;border-radius:8px">
+    <div>
+      <h1>Smart Home Security</h1>
+      <div style="font-size:12px;color:var(--muted)">Interactive preview: visitor management + emergency demo</div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- Mockup -->
+    <section class="mockup">
+      
+      <div class="device" id="device">
+        <div class="topbar">
+          <div>Front Gate</div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <span class="badge-em" id="em-badge" style="display:none">EMERGENCY</span>
+            <span style="font-size:12px;color:var(--muted)">12:34</span>
+          </div>
+        </div>
+
+        <div class="visitor-photo" id="visitorPhoto">
+            <img id="visitorImg" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=faces" alt="Visitor" />
+        </div>
+
+        <div class="info">
+          <div>
+            <div style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">Threat Level</div>
+            <div class="threat" id="threatText" style="color:#10b981">25% — Low</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">Event ID</div>
+            <div style="font-weight:600;color:var(--text)">#EVT-1234</div>
+          </div>
+        </div>
+
+        <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end">
+          <div style="margin-bottom:auto;margin-top:14px;color:var(--muted);font-size:12px;font-weight:600">ACTIVITY LOG</div>
+          <div id="log"
+            style="height:100px;overflow:auto;background:#f8fafc;padding:10px;border-radius:12px;margin-bottom:16px;color:var(--muted);font-size:12px;border:1px solid #e2e8f0">
+          </div>
+
+          <div class="comm">
+            <button class="btn-speak" id="speakBtn">
+                <span style="display:block;font-size:16px;margin-bottom:4px">🔊</span>
+                Speaker
+            </button>
+            <button class="btn-speak" id="intercomBtn">
+                <span style="display:block;font-size:16px;margin-bottom:4px">🎙️</span>
+                Intercom
+            </button>
+          </div>
+
+          <div class="actions">
+            <button class="btn-deny" id="denyBtn">Deny</button>
+            <button class="btn-open" id="openBtn">Open Gate</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button onclick="simulateNormal()" style="padding:8px 12px;border-radius:8px;background:#f1f5f9;color:#334155;font-size:12px">Normal</button>
+        <button onclick="simulateHighThreat()"
+          style="padding:8px 12px;border-radius:8px;background:#fee2e2;color:#ef4444;font-size:12px">High Threat</button>
+        <button onclick="simulateFire()"
+          style="padding:8px 12px;border-radius:8px;background:#ffedd5;color:#f97316;font-size:12px">Fire</button>
+      </div>
+
+    </section>
+  </main>
+
+  <script>
+    const logEl = document.getElementById('log');
+    const threatText = document.getElementById('threatText');
+    const visitorImg = document.getElementById('visitorImg');
+    const emBadge = document.getElementById('em-badge');
+
+    function pushLog(text) {
+      const t = document.createElement('div');
+      t.style.marginBottom = '4px';
+      t.textContent = text;
+      logEl.prepend(t);
+    }
+
+    document.getElementById('openBtn').addEventListener('click', () => {
+      if (confirm('Are you sure you want to open the gate?')) {
+        pushLog('✓ Gate Opened');
+      } else pushLog('x Open Cancelled');
+    });
+
+    document.getElementById('denyBtn').addEventListener('click', () => {
+      pushLog('x Entry Denied');
+    });
+
+    document.getElementById('speakBtn').addEventListener('click', () => {
+      pushLog('🔊 Speaker Active');
+    });
+
+    document.getElementById('intercomBtn').addEventListener('click', () => {
+      pushLog('🎙️ Intercom Active');
+    });
+
+    function simulateNormal() {
+      threatText.textContent = '25% - Low';
+      threatText.style.color = '#10b981'; // Green
+      visitorImg.src = 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=faces';
+      visitorImg.style.opacity = '1';
+      emBadge.style.display = 'none';
+      pushLog('• Visitor Detected');
+    }
+
+    function simulateHighThreat() {
+      threatText.textContent = '95% - HIGH';
+      threatText.style.color = '#ef4444'; // Red
+      visitorImg.src = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&h=400&fit=crop&crop=faces';
+      emBadge.style.display = 'inline-block';
+      pushLog('⚠️ HIGH THREAT DETECTED');
+      
+      setTimeout(() => {
+        if (confirm('High threat detected. Call police?')) {
+          pushLog('📞 Calling Police...');
+        } else {
+          pushLog('• Police Call Dismissed');
+        }
+      }, 300);
+    }
+
+    function simulateFire() {
+      emBadge.style.display = 'inline-block';
+      pushLog('FIRE emergency -> trigger loud persistent alarm (simulated)');
+      alert('!!! FIRE ALERT !!!\nEmergency notification triggered.');
+    }
+
+    // initial state
+    simulateNormal();
+  </script>
+</body>
+
+</html>
